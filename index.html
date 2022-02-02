@@ -5,15 +5,25 @@
 	<link rel="stylesheet" href="./css.css">
   <script src="https://kit.fontawesome.com/300822b5d3.js" crossorigin="anonymous"></script>
 <title>CFPT Facebook</title>
+<script>
+	$('[data-toggle=offcanvas]').click(function() {
+  	$(this).toggleClass('visible-xs text-center');
+    $(this).find('i').toggleClass('glyphicon-chevron-right glyphicon-chevron-left');
+    $('.row-offcanvas').toggleClass('active');
+    $('#lg-menu').toggleClass('hidden-xs').toggleClass('visible-xs');
+    $('#xs-menu').toggleClass('visible-xs').toggleClass('hidden-xs');
+    $('#btnShow').toggle();
+});
+</script>
 </head>
 
 <body>
   <div class="wrapper">
     <div class="box">
         <div class="row row-offcanvas row-offcanvas-left">
-                      
-          <div class="column col-sm-2 col-xs-1 sidebar-offcanvas" id="sidebar"></div>
-            <!-- sidebar
+                <!-- sidebar -->      
+          
+            
             <div class="column col-sm-2 col-xs-1 sidebar-offcanvas" id="sidebar">
               
               	<ul class="nav">
@@ -32,7 +42,7 @@
                     </li>
                 </ul>
               
-              	tiny only nav
+              	<!--tiny only nav-->
               <ul class="nav visible-xs" id="xs-menu">
                   	<li><a href="#featured" class="text-center"><i class="glyphicon glyphicon-list-alt"></i></a></li>
                     <li><a href="#stories" class="text-center"><i class="glyphicon glyphicon-list"></i></a></li>
@@ -41,7 +51,7 @@
                 </ul>
               
             </div>
-             /sidebar -->
+             <!--/sidebar -->
           
             <!-- main right col -->
             <div class="column col-sm-10 col-xs-11" id="main">
@@ -49,12 +59,12 @@
                 <!-- top nav -->
               	<div class="navbar navbar-blue navbar-static-top">  
                     <div class="navbar-header">
-                      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse">
+                      <!--<button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse">
                         <span class="sr-only">Toggle</span>
                         <span class="icon-bar"></span>
           				<span class="icon-bar"></span>
           				<span class="icon-bar"></span>
-                      </button>
+                      </button>-->
                       <a href="/" class="navbar-brand logo">b</a>
                   	</div>
                   	<nav class="collapse navbar-collapse" role="navigation">
@@ -103,7 +113,7 @@
                          <div class="col-sm-5">
                            
                               <div class="panel panel-default">
-                                <div class="panel-thumbnail"><img src="/assets/example/bg_5.jpg" class="img-responsive"></div>
+                                <div class="panel-thumbnail"><img src="./images/ciel.jfif" class="img-responsive"></div>
                                 <div class="panel-body">
                                   <p class="lead">Urbanization</p>
                                   <p>45 Followers, 13 Posts</p>
@@ -160,7 +170,7 @@
                           <!-- main col right -->
                           <div class="col-sm-7">
                                
-                                <div class="well"> 
+                                <!--<div class="well"> 
                                    <form class="form">
                                     <h4>Sign-up</h4>
                                     <div class="input-group text-center">
@@ -168,6 +178,10 @@
                                       <span class="input-group-btn"><button class="btn btn-lg btn-primary" type="button">OK</button></span>
                                     </div>
                                   </form>
+                                </div>-->
+
+                                <div class="well">
+                                  <input type="text" name="" id="" value="WELCOME">
                                 </div>
                       
                                <div class="panel panel-default">
@@ -291,16 +305,7 @@
   </div>
 </div>
 	
-<script>
-	$('[data-toggle=offcanvas]').click(function() {
-  	$(this).toggleClass('visible-xs text-center');
-    $(this).find('i').toggleClass('glyphicon-chevron-right glyphicon-chevron-left');
-    $('.row-offcanvas').toggleClass('active');
-    $('#lg-menu').toggleClass('hidden-xs').toggleClass('visible-xs');
-    $('#xs-menu').toggleClass('visible-xs').toggleClass('hidden-xs');
-    $('#btnShow').toggle();
-});
-</script>
+
 	
 </body>
 
