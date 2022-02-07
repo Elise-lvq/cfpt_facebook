@@ -49,28 +49,38 @@ function dbConn()
  */
 
 /**
- * Ajoute un nouvel utilisateur avec ses paramètres
- * @param mixed $mdp Mot de passe utilisateur
- * @param mixed $email Email utilisateur
+ * Crée un nouveau post avec une image
+ * @param $img =  image du post
+ * @param $comm =  commentaire du post
+ * @param $date =  date du post
+ * @return $answer
  */
-function createUser($img,$comm, $date)
+function createUser($imgName,$imgType,$comm,$date)
 {
   static $ps = null;
-  $sql = 'INSERT INTO users (`idUser`, `mdp`,`email`) ';
-  $sql .= "VALUES (NULL ,:MDP, :EMAIL)";
-  if ($ps == null) {
+  static $ps2 = null;
+  $sql = 'INSERT INTO post (`idPost`, `commentaires`,`datePost`) ';
+  $sql2 = 'INSERT INTO media (`idMedia`, `nomFichierMedia`,`typeMedia`) ';
+  $sql .= "VALUES (NULL ,:COMM, :DATEPOST)";
+  $sql2 .= "VALUES (NULL ,:NOMIMG , :TYPEIMG)";
+  if ($ps == null && $ps2 == null) {
     $ps = dbConn()->prepare($sql);
+    $ps2 = dbConn()->prepare($sql2);
   }
   $answer=false;
   try {
-    $ps->bindParam(':MDP', $mdp, PDO::PARAM_STR);
-    $ps->bindParam(':EMAIL', $email, PDO::PARAM_STR);
+    $ps->bindParam(':COMM', $comm, PDO::PARAM_STR);
+    $ps->bindParam(':DATEPOST', $date, PDO::PARAM_STR);
+
+    $ps2->bindParam(':NOMIMG',$imgName);
+    $ps2->bindParam(':NOMIMG',$imgType, PDO::PARAM_STR);
 
     $answer = $ps->execute();
+    $answer .= $ps2->execute();
     if($answer){
-      $_SESSION['messageCreateUser'] = "Nouvelle Utilisateur créer";
+      $_SESSION['messagePost'] = "Nouveau post publié";
     }else{
-      $_SESSION['messageCreateUser'] = "Echec lors de la création";
+      $_SESSION['messagePost'] = "Echec lors de la publication";
     }
 
   } catch (PDOException $e) {
