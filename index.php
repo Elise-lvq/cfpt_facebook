@@ -17,7 +17,11 @@
   </style>
 </head>
 <body>
-
+<?php
+  if(isset($_SESSION["messagePost"])){
+    echo '<script>alert($_SESSION["messagePost"])</script>';
+  }
+?>
 <nav class="navbar navbar-inverse">
   <div class="container-fluid">
     <div class="navbar-header">
