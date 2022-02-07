@@ -19,7 +19,7 @@
 <body>
 <?php
   if(isset($_SESSION["messagePost"])){
-    echo '<script>alert($_SESSION["messagePost"])</script>';
+    function_alert($_SESSION["messagePost"]);
   }
 ?>
 <nav class="navbar navbar-inverse">

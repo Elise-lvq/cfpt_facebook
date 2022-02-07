@@ -89,4 +89,9 @@ function createUser($imgName,$imgType,$comm,$date)
   return $answer;
 }
 
+function function_alert($message) {
+      
+    // Display the alert box 
+    echo "<script>alert('$message');</script>";
+}
 ?>
