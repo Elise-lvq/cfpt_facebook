@@ -55,30 +55,61 @@ function dbConn()
  * @param $date =  date du post
  * @return $answer
  */
-function createUser($imgName,$imgType,$comm,$date)
+function addPost($imgName,$imgType,$imgContent,$comm)
 {
   static $ps = null;
   static $ps2 = null;
-  $sql = 'INSERT INTO post (`idPost`, `commentaires`,`datePost`) ';
-  $sql2 = 'INSERT INTO media (`idMedia`, `nomFichierMedia`,`typeMedia`) ';
+
+  dbConn()->beginTransaction(); 
+
+  $sql = 'INSERT INTO post (`idPost`, `commentaires`,,`datePost`) ';
   $sql .= "VALUES (NULL ,:COMM, :DATEPOST)";
-  $sql2 .= "VALUES (NULL ,:NOMIMG , :TYPEIMG)";
+
+  $sql2 = 'INSERT INTO media (`idMedia`, `nomFichierMedia`,`typeMedia`,`image`) ';
+  $sql2 .= "VALUES (NULL ,:NOMIMG , :TYPEIMG, :IMAGE)";
+
+  $sql3 = 'INSERT INTO CONTENIR (`idMedia`, `idPost`)';
+  $sql3 .= 'VALUES (:IDMEDIA,:IDPOST);';
+
   if ($ps == null && $ps2 == null) {
     $ps = dbConn()->prepare($sql);
     $ps2 = dbConn()->prepare($sql2);
+    $ps3 = dbConn()()->prepare($sql3);
   }
   $answer=false;
   try {
     $ps->bindParam(':COMM', $comm, PDO::PARAM_STR);
     $ps->bindParam(':DATEPOST', $date, PDO::PARAM_STR);
+    $answer = $ps->execute();
 
     $ps2->bindParam(':NOMIMG',$imgName);
     $ps2->bindParam(':NOMIMG',$imgType, PDO::PARAM_STR);
-
-    $answer = $ps->execute();
+    $ps2->bindParam(':IMAGE',$imgContent);
     $answer .= $ps2->execute();
+
+    $idPost = "SELECT * FROM post ORDER BY idPost DESC LIMIT 0, 1";
+    $idPost = dbConn()->exec($idPost);
+    $idMedia = "SELECT * FROM media ORDER BY idMedia DESC LIMIT 0, 1";
+    $idMedia = dbConn()->exec($idMedia);
+    $ps3->bindParam(':IDMEDIA', $idMedia);
+    $ps3->bindParam(':IDPOST',$idPost);
+    $answer .= $ps3->execute();
+
     if($answer){
       $_SESSION['messagePost'] = "Nouveau post publié";
+      $echo ="<div class='row'>";
+      $echo.="  <div class='col-sm-12'>";
+      $echo.="    <div class='panel panel-default text-left'>";
+      $echo.="      <div class='panel-body'>";
+      $echo.="        <p contenteditable='true'>Status: Feeling Blue</p>";
+      $echo.="        <button type='button' class='btn btn-default btn-sm'>";
+      $echo.="          <span class='glyphicon glyphicon-thumbs-up'></span> Like";
+      $echo .="<img src='".$imgContent."' class='img-circle' height='55' width='55'>";
+      $echo.="        </button>";     
+      $echo.="      </div>";
+      $echo.="    </div>";
+      $echo.="  </div>";
+      $echo.="</div>";
     }else{
       $_SESSION['messagePost'] = "Echec lors de la publication";
     }
@@ -86,7 +117,7 @@ function createUser($imgName,$imgType,$comm,$date)
   } catch (PDOException $e) {
     echo $e->getMessage();
   }
-  return $answer;
+  return $echo;
 }
 
 function function_alert($message) {
@@ -94,4 +125,5 @@ function function_alert($message) {
     // Display the alert box 
     echo "<script>alert('$message');</script>";
 }
+
 ?>

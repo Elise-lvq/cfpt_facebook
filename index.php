@@ -1,5 +1,7 @@
+<?php
+?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <title>Bootstrap Example</title>
   <meta charset="utf-8">
@@ -83,7 +85,15 @@
           </div>
         </div>
       </div>
-      
+      <?php
+        if(isset($_POST["textPost"]) && isset($_POST["file"])){
+          //echo addPost($_FILES['file']['name'],$_FILES['file']['type'],$imgContent,$_POST['textPost']);
+          echo $_POST["textPost"];
+          $uploadDirectory = "images/".$_FILES['file']["name"];
+          move_uploaded_file($_FILES['file']['tmp_name'], $uploadDirectory);
+          echo "<img src='./images/".  $_FILES["file"]["name"] ."'>";
+        }
+      ?>
       <div class="row">
         <div class="col-sm-3">
           <div class="well">
@@ -156,6 +166,7 @@
 </div>
 
 <!--post modal-->
+<form action="#" id="post" method="POST" class="form center-block" enctype="multipart/form-data">
 <div id="postModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog">
   <div class="modal-content">
@@ -164,22 +175,21 @@
 			Update Status
       </div>
       <div class="modal-body">
-          <form class="form center-block">
+          
             <div class="form-group">
-              <textarea class="form-control input-lg" autofocus="" placeholder="What do you want to share?"></textarea>
+              <input type="text" id="textPost" name="textPost" class="form-control input-lg" autofocus="" placeholder="What do you want to share?" >
             </div>
             <div class="modal-footer">
               <div>
-                <input class="btn btn-primary btn-sm" data-dismiss="modal" aria-hidden="true" type="submit" value="Post">
-                <ul class="pull-left list-inline"><li><a href=""><i class="glyphicon glyphicon-camera"><input type="file" name="file" id="file"></i></a></li></ul>
+                <ul class="pull-left list-inline"><li><a href=""><i class="glyphicon glyphicon-camera"><input type="file" name="file" id="file" /></i></a></li></ul>
+                <input class="btn btn-primary btn-sm"  type="submit" id="post" name="post" value="Post">
           </div>	
           </div>
-          </form>
       </div>
-      
   </div>
   </div>
 </div>
+</form>
 
 <footer class="container-fluid text-center">
   <p>Footer Text</p>
