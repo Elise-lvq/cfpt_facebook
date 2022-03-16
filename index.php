@@ -86,13 +86,15 @@
         </div>
       </div>
       <?php
-        if(isset($_POST["textPost"]) && isset($_POST["file"])){
+        if(isset($_POST["textPost"]) && isset($_FILES["file"])){
           //echo addPost($_FILES['file']['name'],$_FILES['file']['type'],$imgContent,$_POST['textPost']);
           echo $_POST["textPost"];
           $uploadDirectory = "images/".$_FILES['file']["name"];
           move_uploaded_file($_FILES['file']['tmp_name'], $uploadDirectory);
           echo "<img src='./images/".  $_FILES["file"]["name"] ."'>";
-        }
+        }else{
+          echo "echec";
+                }
       ?>
       <div class="row">
         <div class="col-sm-3">
@@ -181,7 +183,7 @@
             </div>
             <div class="modal-footer">
               <div>
-                <ul class="pull-left list-inline"><li><a href=""><i class="glyphicon glyphicon-camera"><input type="file" name="file" id="file" /></i></a></li></ul>
+                <ul class="pull-left list-inline"><li><i class="glyphicon glyphicon-camera"><input type="file" name="file" id="file" accept=".jpg,.png,.pdf"/></i></li></ul>
                 <input class="btn btn-primary btn-sm"  type="submit" id="post" name="post" value="Post">
           </div>	
           </div>
@@ -194,6 +196,15 @@
 <footer class="container-fluid text-center">
   <p>Footer Text</p>
 </footer>
+<script>
+  var uploadField = document.getElementById("file");
 
+uploadField.onchange = function() {
+    if(this.files[0].size > 3072){
+       alert("File is too big!");
+       this.value = "";
+    };
+};
+</script>
 </body>
 </html>
