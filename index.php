@@ -1,4 +1,5 @@
 <?php
+include('../cfpt_facebook/PDO/functions.php');
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -87,12 +88,26 @@
       </div>
       <?php
         if(isset($_POST["textPost"]) && isset($_FILES["file"])){
-          //echo addPost($_FILES['file']['name'],$_FILES['file']['type'],$imgContent,$_POST['textPost']);
-          echo $_POST["textPost"];
           $uploadDirectory = "images/".$_FILES['file']["name"];
           move_uploaded_file($_FILES['file']['tmp_name'], $uploadDirectory);
+          echo addPost($_FILES['file']['name'],$_FILES['file']['type'],base64_encode(file_get_contents($_FILES['file']['tmp_name'].[$_FILES['file']['name']])),$_POST["textPost"]);
+          //echo addPost($_FILES['file']['name'],$_FILES['file']['type'],$imgContent,$_POST['textPost']); 
+          /*echo "<div class='row'>";
+          echo "<div class='col-sm-12'>";
+          echo "<div class='panel panel-default text-left'>";
+          echo "<div class='panel-body'>";
+          echo "<p contenteditable='true'>Status: ".$_POST["textPost"]."</p>";
           echo "<img src='./images/".  $_FILES["file"]["name"] ."'>";
-        }else{
+             
+          echo "</div>";
+          echo "<button type='button' class='btn btn-default btn-sm'>";
+          echo "<span class='glyphicon glyphicon-thumbs-up'></span> Like";
+          echo "</button>"; 
+          echo "</div>";
+          echo "</div>";
+          echo "</div>";
+          
+        */}else{
           echo "echec";
                 }
       ?>
@@ -183,6 +198,7 @@
             </div>
             <div class="modal-footer">
               <div>
+              <input type="hidden" name="MAX_FILE_SIZE" value="4000000">
                 <ul class="pull-left list-inline"><li><i class="glyphicon glyphicon-camera"><input type="file" name="file" id="file" accept=".jpg,.png,.pdf"/></i></li></ul>
                 <input class="btn btn-primary btn-sm"  type="submit" id="post" name="post" value="Post">
           </div>	
@@ -196,15 +212,5 @@
 <footer class="container-fluid text-center">
   <p>Footer Text</p>
 </footer>
-<script>
-  var uploadField = document.getElementById("file");
-
-uploadField.onchange = function() {
-    if(this.files[0].size > 3072){
-       alert("File is too big!");
-       this.value = "";
-    };
-};
-</script>
 </body>
 </html>

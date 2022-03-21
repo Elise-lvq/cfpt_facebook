@@ -55,48 +55,72 @@ function dbConn()
  * @param $date =  date du post
  * @return $answer
  */
-function addPost($imgName,$imgType,$imgContent,$comm)
+
+function addMedia($imgName,$imgType,$imgContent)
 {
-  static $ps = null;
-  static $ps2 = null;
-
-  dbConn()->beginTransaction(); 
-
-  $sql = 'INSERT INTO post (`idPost`, `commentaires`,,`datePost`) ';
-  $sql .= "VALUES (NULL ,:COMM, :DATEPOST)";
-
-  $sql2 = 'INSERT INTO media (`idMedia`, `nomFichierMedia`,`typeMedia`,`image`) ';
-  $sql2 .= "VALUES (NULL ,:NOMIMG , :TYPEIMG, :IMAGE)";
-
-  $sql3 = 'INSERT INTO CONTENIR (`idMedia`, `idPost`)';
-  $sql3 .= 'VALUES (:IDMEDIA,:IDPOST);';
-
-  if ($ps == null && $ps2 == null) {
-    $ps = dbConn()->prepare($sql);
-    $ps2 = dbConn()->prepare($sql2);
-    $ps3 = dbConn()()->prepare($sql3);
+  try {  
+      $bd = dbConn();
+      $requete = $bd->prepare("INSERT INTO media (`idMedia`, `nomFichierMedia`,`typeMedia`,`image`) VALUES (NULL ,:NOMIMG , :TYPEIMG, :IMAGE);");
+      
+      $requete->execute(
+          array(
+              ':NOMIMG' => $imgName,
+              ':TYPEIMG' => $imgType,
+              ':IMAGE' => $imgContent
+          )
+      );
+  } catch (Exception $e) {
+      echo 'Exception reçue : ',  $e->getMessage(), "\n";
   }
-  $answer=false;
-  try {
-    $ps->bindParam(':COMM', $comm, PDO::PARAM_STR);
-    $ps->bindParam(':DATEPOST', $date, PDO::PARAM_STR);
-    $answer = $ps->execute();
+}
 
-    $ps2->bindParam(':NOMIMG',$imgName);
-    $ps2->bindParam(':NOMIMG',$imgType, PDO::PARAM_STR);
-    $ps2->bindParam(':IMAGE',$imgContent);
-    $answer .= $ps2->execute();
-
+function addContenir(){
+  try {  
+    $bd = dbConn();
+    $requete = $bd->prepare("INSERT INTO CONTENIR (`idMedia`, `idPost`) VALUES (:IDMEDIA,:IDPOST);");
     $idPost = "SELECT * FROM post ORDER BY idPost DESC LIMIT 0, 1";
     $idPost = dbConn()->exec($idPost);
     $idMedia = "SELECT * FROM media ORDER BY idMedia DESC LIMIT 0, 1";
     $idMedia = dbConn()->exec($idMedia);
-    $ps3->bindParam(':IDMEDIA', $idMedia);
-    $ps3->bindParam(':IDPOST',$idPost);
-    $answer .= $ps3->execute();
+
+    $requete->execute(
+        array(
+            ':IDMEDIA' => $idMedia,
+            ':IDPOST' => $idPost
+        )
+    );
+} catch (Exception $e) {
+    echo 'Exception reçue : ',  $e->getMessage(), "\n";
+}
+}
+
+function addPost($imgName,$imgType,$imgContent,$comm)
+{
+  static $ps = null;
+
+  dbConn()->beginTransaction(); 
+
+  $sql = 'INSERT INTO post (`idPost`, `commentaires`,`datePost`) ';
+  $sql .= "VALUES (NULL ,:COMM, :DATEPOST)";
+
+  if ($ps == null) {
+    $ps = dbConn()->prepare($sql);
+  }
+  $answer=false;
+  try {
+    $date = date("y-m-d");
+    $ps->bindParam(':COMM', $comm, PDO::PARAM_STR);
+    $ps->bindParam(':DATEPOST', $date , PDO::PARAM_STR);
+    $answer = $ps->execute();
+
+    addMedia($imgName,$imgType,$imgContent);
+    addContenir();
+    
+
+    $echo  = "null";
 
     if($answer){
-      $_SESSION['messagePost'] = "Nouveau post publié";
+      function_alert("Nouveau post publié");
       $echo ="<div class='row'>";
       $echo.="  <div class='col-sm-12'>";
       $echo.="    <div class='panel panel-default text-left'>";
@@ -125,5 +149,7 @@ function function_alert($message) {
     // Display the alert box 
     echo "<script>alert('$message');</script>";
 }
+
+
 
 ?>
