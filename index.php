@@ -20,11 +20,6 @@ include('../cfpt_facebook/PDO/functions.php');
   </style>
 </head>
 <body>
-<?php
-  if(isset($_SESSION["messagePost"])){
-    function_alert($_SESSION["messagePost"]);
-  }
-?>
 <nav class="navbar navbar-inverse">
   <div class="container-fluid">
     <div class="navbar-header">
@@ -88,9 +83,11 @@ include('../cfpt_facebook/PDO/functions.php');
       </div>
       <?php
         if(isset($_POST["textPost"]) && isset($_FILES["file"])){
-          $uploadDirectory = "images/".$_FILES['file']["name"];
-          move_uploaded_file($_FILES['file']['tmp_name'], $uploadDirectory);
-          echo addPost($_FILES['file']['name'],$_FILES['file']['type'],base64_encode(file_get_contents($_FILES['file']['tmp_name'].[$_FILES['file']['name']])),$_POST["textPost"]);
+          //$uploadDirectory = "images/".$_FILES['file']["name"];
+          // move_uploaded_file($_FILES['file']['tmp_name'], $uploadDirectory);
+          addMedia($_FILES['file']['name'],$_FILES['file']['type'],base64_encode(file_get_contents($_FILES['file']['tmp_name'], FILE_USE_INCLUDE_PATH)));
+          echo addPost($_POST["textPost"]);
+          addContenir(findPost(),findMedia());
           //echo addPost($_FILES['file']['name'],$_FILES['file']['type'],$imgContent,$_POST['textPost']); 
           /*echo "<div class='row'>";
           echo "<div class='col-sm-12'>";
