@@ -85,9 +85,27 @@ include('../cfpt_facebook/PDO/functions.php');
         if(isset($_POST["textPost"]) && isset($_FILES["file"])){
           //$uploadDirectory = "images/".$_FILES['file']["name"];
           // move_uploaded_file($_FILES['file']['tmp_name'], $uploadDirectory);
-          addMedia($_FILES['file']['name'],$_FILES['file']['type'],base64_encode(file_get_contents($_FILES['file']['tmp_name'], FILE_USE_INCLUDE_PATH)));
-          echo addPost($_POST["textPost"]);
-          addContenir(findPost(),findMedia());
+          if (addNewPost($_POST["textPost"], $_FILES['file']['name'],$_FILES['file']['type'],base64_encode(file_get_contents($_FILES['file']['tmp_name'], FILE_USE_INCLUDE_PATH))) == false)
+          {
+            echo "c'est pas bon";
+          }
+
+          echo "<div class='row'>";
+          echo"  <div class='col-sm-12'>";
+          echo"    <div class='panel panel-default text-left'>";
+          echo"      <div class='panel-body'>";
+          echo"        <p contenteditable='true'>Status: ".$_POST["textPost"]."</p>";
+          echo"        <button type='button' class='btn btn-default btn-sm'>";
+          echo"          <span class='glyphicon glyphicon-thumbs-up'></span> Like";
+          ///$ec .="<img src='". ."' class='img-circle' height='55' width='55'>";
+          echo"        </button>";     
+          echo"      </div>";
+          echo"    </div>";
+          echo"  </div>";
+          echo"</div>";
+      
+
+
           //echo addPost($_FILES['file']['name'],$_FILES['file']['type'],$imgContent,$_POST['textPost']); 
           /*echo "<div class='row'>";
           echo "<div class='col-sm-12'>";

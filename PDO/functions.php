@@ -48,13 +48,44 @@ function dbConn()
  */
 
 /**
- * Crée un nouveau post avec une image
- * @param $img =  image du post
- * @param $comm =  commentaire du post
- * @param $date =  date du post
- * @return $answer
+ * Ajouter un nouveau post
+ *
+ * @param string $comm
+ * @param string $imgName Le nom de l'image du post
+ * @param string $imgType Le type de l'image
+ * @param string $imgContent Le contenu de l'image en base64
+ * @return bool True si ok, autrement False
  */
+function addNewPost($comm, $imgName,$imgType,$imgContent)
+{
+  $bd = dbConn();
+  $bd->beginTransaction();
+  $idPost = addPost($comm);
+  if ($idPost == -1){
+    $bd->rollBack();
+    return false;
+  }
+  $idMedia = addMedia($imgName,$imgType,$imgContent);
+  if ($idMedia == -1){
+    $bd->rollBack();
+    return false;
+  }
 
+  if (addContenir($idPost,$idMedia) == false){
+    $bd->rollBack();
+    return false;
+  }
+
+  $bd->commit();
+  return true;
+}
+/**
+ * Crée un nouveau post avec une image
+ * @param string $imgName Le nom de l'image du post
+ * @param string $imgType Le type de l'image
+ * @param string $imgContent Le contenu de l'image en base64
+ * @return int L'identifiant unique du média, -1 si erreur
+ */
 function addMedia($imgName,$imgType,$imgContent)
 {
   try {  
@@ -68,99 +99,63 @@ function addMedia($imgName,$imgType,$imgContent)
               ':IMAGE' => $imgContent
           )
       );
-      function_alert("Media bien ajouté");
-  } catch (Exception $e) {
+      return $bd->lastInsertId();
+    } catch (Exception $e) {
       echo 'Exception reçue : ',  $e->getMessage(), "\n";
   }
-}
-
-function findPost(){
-  try{
-    $idPost = dbConn()->prepare("SELECT idPost FROM post ORDER BY idPost DESC LIMIT 0, 1");
-    $idPost->execute();
-    function_alert("Post id trouvé");
-    return $idPost;
-  } catch (Exception $e) {
-      echo 'Exception reçue : ',  $e->getMessage(), "\n";
-  }
-  
-}
-
-function findMedia(){
-  try{
-    $idMedia =dbConn()->prepare( "SELECT idMedia FROM media ORDER BY idMedia DESC LIMIT 0, 1");
-    $idMedia ->execute();
-    function_alert("Media id trouvé");
-    return $idMedia;
-  } catch (Exception $e) {
-      echo 'Exception reçue : ',  $e->getMessage(), "\n";
-  }
-  
+  // Fail
+  return -1;
 }
 
 function addContenir($idPost,$idMedia){
+
   try {  
     $bd = dbConn();
     $requete = $bd->prepare("INSERT INTO contenir (`idMedia`, `idPost`) VALUES (:IDMEDIA,:IDPOST)");
-
     $requete->execute(
         array(
             ':IDMEDIA' => $idMedia,
             ':IDPOST' => $idPost
         )
     );
-    function_alert("Contenir bien ajouté");
-} catch (Exception $e) {
-    echo 'Exception reçue : ',  $e->getMessage(), "\n";
-}
+    // Done
+    return true;
+  } catch (Exception $e) {
+        echo 'Exception reçue : ',  $e->getMessage(), "\n";
+  }
+  // Fail
+  return false;
 }
 
+/**
+ * Insérer un post 
+ *
+ * @param string $comm Le commentaire du post
+ * @return int l'identifiant unique du post. -1 si erreur
+ */
 function addPost($comm)
 {
-  static $ps = null; 
+  $sql = 'INSERT INTO post (`commentaires`,`datePost`) ';
+  $sql .= "VALUES (:COMM, :DATEPOST)";
 
-  $sql = 'INSERT INTO post (`idPost`, `commentaires`,`datePost`) ';
-  $sql .= "VALUES (NULL ,:COMM, :DATEPOST)";
-
-  if ($ps == null) {
-    $ps = dbConn()->prepare($sql);
-  }
+  $requete = dbConn()->prepare($sql);
   try {
     $date = date("y-m-d");
-    $ps->execute(
+    $requete->execute(
       array(
           ':COMM' => $comm,
           ':DATEPOST' => $date
       )
-  );
-
-    
-    
-
-    $echo  = "null";
-
-    
-    function_alert("Nouveau post publié");
-    $echo ="<div class='row'>";
-    $echo.="  <div class='col-sm-12'>";
-    $echo.="    <div class='panel panel-default text-left'>";
-    $echo.="      <div class='panel-body'>";
-    $echo.="        <p contenteditable='true'>Status: ".$comm."</p>";
-    $echo.="        <button type='button' class='btn btn-default btn-sm'>";
-    $echo.="          <span class='glyphicon glyphicon-thumbs-up'></span> Like";
-    //$echo .="<img src='". ."' class='img-circle' height='55' width='55'>";
-    $echo.="        </button>";     
-    $echo.="      </div>";
-    $echo.="    </div>";
-    $echo.="  </div>";
-    $echo.="</div>";
-    
-
+    );
+    return dbConn()->lastInsertId();
   } catch (Exception $e) {
     echo 'Exception reçue : ',  $e->getMessage(), "\n";
   }
-  return $echo;
+  return -1;
 }
+
+
+
 
 function function_alert($message) {
       
