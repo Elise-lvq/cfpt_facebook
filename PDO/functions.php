@@ -90,7 +90,7 @@ function addMedia($imgName,$imgType,$imgContent)
 {
   try {  
       $bd = dbConn();
-      $requete = $bd->prepare("INSERT INTO media (`idMedia`, `nomFichierMedia`,`typeMedia`,`image`) VALUES (NULL ,:NOMIMG , :TYPEIMG, :IMAGE);");
+      $requete = $bd->prepare("INSERT INTO media (`nom`,`type`,`image`) VALUES (:NOMIMG , :TYPEIMG, :IMAGE);");
       
       $requete->execute(
           array(
@@ -135,7 +135,7 @@ function addContenir($idPost,$idMedia){
  */
 function addPost($comm)
 {
-  $sql = 'INSERT INTO post (`commentaires`,`datePost`) ';
+  $sql = 'INSERT INTO post (`commentaire`,`date`) ';
   $sql .= "VALUES (:COMM, :DATEPOST)";
 
   $requete = dbConn()->prepare($sql);
