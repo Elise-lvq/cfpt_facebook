@@ -54,7 +54,7 @@ function dbConn()
  * @param string $imgName Le nom de l'image du post
  * @param string $imgType Le type de l'image
  * @param string $imgContent Le contenu de l'image en base64
- * @return bool True si ok, autrement False
+ * @return mixed idPost, autrement False
  */
 function addNewPost($comm, $imgName,$imgType,$imgContent)
 {
@@ -77,7 +77,7 @@ function addNewPost($comm, $imgName,$imgType,$imgContent)
   }
 
   $bd->commit();
-  return true;
+  return $idPost;
 }
 /**
  * Crée un nouveau post avec une image
@@ -161,11 +161,17 @@ function addPost($comm)
  * 
  * 
  */
+/**
+ * Montrer les medias d'un post
+ *
+ * @param int $idPost L'id du post
+ * @return array tout les medias rélié au post
+ */
 function afficherImg($idPost)
 {
     try {
         $arr = array();
-        $bd = CoToBase();
+        $bd = dbConn();
         $requete = $bd->prepare('SELECT media.image, media.type FROM contenir JOIN media ON media.idmedia = contenir.idMedia 
         JOIN post ON post.idPost = contenir.idPost WHERE post.idPost = :idpost', array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
         $requete->execute(
@@ -181,6 +187,23 @@ function afficherImg($idPost)
         }
 
         return $arr;
+    } catch (Exception $e) {
+        echo 'Exception reçue : ',  $e->getMessage(), "\n";
+    }
+}
+
+/**
+ * Montrer tout les posts
+ *
+ * @return array tout les posts
+ */
+function afficherPost()
+{
+    try {
+        $bd = dbConn();
+        $requete = $bd->prepare('SELECT * FROM post');
+        $requete->execute();
+        return $requete->fetchAll();
     } catch (Exception $e) {
         echo 'Exception reçue : ',  $e->getMessage(), "\n";
     }

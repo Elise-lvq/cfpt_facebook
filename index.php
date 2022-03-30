@@ -85,52 +85,53 @@ include('../cfpt_facebook/PDO/functions.php');
         if(isset($_POST["textPost"]) && isset($_FILES["file"])){
           //$uploadDirectory = "images/".$_FILES['file']["name"];
           // move_uploaded_file($_FILES['file']['tmp_name'], $uploadDirectory);
-          if (addNewPost($_POST["textPost"], $_FILES['file']['name'],$_FILES['file']['type'],base64_encode(file_get_contents($_FILES['file']['tmp_name'], FILE_USE_INCLUDE_PATH))) == false)
+          $ajout = addNewPost($_POST["textPost"], $_FILES['file']['name'],$_FILES['file']['type'],base64_encode(file_get_contents($_FILES['file']['tmp_name'], FILE_USE_INCLUDE_PATH)));
+          if ($ajout == false)
           {
             echo "c'est pas bon";
           }
 
-          echo "<div class='row'>";
-          echo"  <div class='col-sm-12'>";
-          echo"    <div class='panel panel-default text-left'>";
-          echo"      <div class='panel-body'>";
-          echo"        <p contenteditable='true'>Status: ".$_POST["textPost"]."</p>";
-          echo"        <button type='button' class='btn btn-default btn-sm'>";
-          echo"          <span class='glyphicon glyphicon-thumbs-up'></span> Like";
-          // (A) READ IMAGE INFO
-          $file = $_FILES['file']['tmp_name'];
-          $fileData = exif_read_data($file);
-          $fileEncode = base64_encode(file_get_contents($file));
+         
+          $donnee = afficherPost();
+          foreach($donnee as $post){
+            echo "<div class='row'>";
+            echo"  <div class='col-sm-12'>";
+            echo"    <div class='panel panel-default text-left'>";
+            echo"      <div class='panel-body'>";
+            echo"        <p contenteditable='true'>Status: ".$post["commentaire"]."</p>";
+            
+            $imgs = afficherImg($post[0]);
+            foreach($imgs as $img){
+                switch (explode('/',$img['type'])[0]) {
+                  case 'image':
+                    echo"<img src=src=\"data:{$img[type]};base64,{$img['image']}\" class='img-circle' height='55' width='55'>";
+                    break;
+                  
+                    case 'audio':
+                      echo"<audio controls> <source src=\"data:{$img['type']};base64,{$img['image']}\"></audio>";
+                      break;
 
-          // (B) BASE 64 ENCODED IMAGE
-          echo"<img src=src=\"data:${fileData["MimeType"]};base64,${fileEncode}\" class='img-circle' height='55' width='55'>";
-          echo"        </button>";     
-          echo"      </div>";
-          echo"    </div>";
-          echo"  </div>";
-          echo"</div>";
-      
+                    case 'video':
+                      echo"<video controls autoplay loop> <source src=\"data:{$img['type']};base64,{$img['image']}\"> </video>";
+                      break;
 
-
-          //echo addPost($_FILES['file']['name'],$_FILES['file']['type'],$imgContent,$_POST['textPost']); 
-          /*echo "<div class='row'>";
-          echo "<div class='col-sm-12'>";
-          echo "<div class='panel panel-default text-left'>";
-          echo "<div class='panel-body'>";
-          echo "<p contenteditable='true'>Status: ".$_POST["textPost"]."</p>";
-          echo "<img src='./images/".  $_FILES["file"]["name"] ."'>";
-             
-          echo "</div>";
-          echo "<button type='button' class='btn btn-default btn-sm'>";
-          echo "<span class='glyphicon glyphicon-thumbs-up'></span> Like";
-          echo "</button>"; 
-          echo "</div>";
-          echo "</div>";
-          echo "</div>";
-          
-        */}else{
-          echo "echec";
+                  default:
+                    echo explode('/',$img['type'])[0];
+                    break;
                 }
+            }
+            echo"        <button type='button' class='btn btn-default btn-sm'>";
+            echo"          <span class='glyphicon glyphicon-thumbs-up'></span> Like";
+            echo"        </button>";     
+            echo"      </div>";
+            echo"    </div>";
+            echo"  </div>";
+            echo"</div>";
+          }
+
+          
+          
+        }
       ?>
       <div class="row">
         <div class="col-sm-3">
@@ -220,7 +221,7 @@ include('../cfpt_facebook/PDO/functions.php');
             <div class="modal-footer">
               <div>
               <input type="hidden" name="MAX_FILE_SIZE" value="4000000">
-                <ul class="pull-left list-inline"><li><i class="glyphicon glyphicon-camera"><input type="file" name="file" id="file" accept=".jpg,.png,.pdf"/></i></li></ul>
+                <ul class="pull-left list-inline"><li><i class="glyphicon glyphicon-camera"><input type="file" name="file" id="file" accept="image/*,audio/*,video/*"/></i></li></ul>
                 <input class="btn btn-primary btn-sm"  type="submit" id="post" name="post" value="Post">
           </div>	
           </div>
