@@ -42,7 +42,7 @@ function dbConn()
 /**
  * 
  * 
- * Create
+ * Insert
  * 
  * 
  */
@@ -154,14 +154,45 @@ function addPost($comm)
   return -1;
 }
 
+/**
+ * 
+ * 
+ * Select
+ * 
+ * 
+ */
+function afficherImg($idPost)
+{
+    try {
+        $arr = array();
+        $bd = CoToBase();
+        $requete = $bd->prepare('SELECT media.image, media.type FROM contenir JOIN media ON media.idmedia = contenir.idMedia 
+        JOIN post ON post.idPost = contenir.idPost WHERE post.idPost = :idpost', array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+        $requete->execute(
+            array(
+                ':idpost' => $idPost,
+            )
+        );
+        $requete->bindColumn(1, $data, PDO::PARAM_LOB);
+        $requete->bindColumn(2, $mime);
+
+        while ($data = $requete->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT)) {
+            array_push($arr, $data);
+        }
+
+        return $arr;
+    } catch (Exception $e) {
+        echo 'Exception reçue : ',  $e->getMessage(), "\n";
+    }
+}
 
 
 
-function function_alert($message) {
+/*function function_alert($message) {
       
     // Display the alert box 
     echo "<script>alert('$message');</script>";
-}
+}*/
 
 
 

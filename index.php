@@ -97,7 +97,13 @@ include('../cfpt_facebook/PDO/functions.php');
           echo"        <p contenteditable='true'>Status: ".$_POST["textPost"]."</p>";
           echo"        <button type='button' class='btn btn-default btn-sm'>";
           echo"          <span class='glyphicon glyphicon-thumbs-up'></span> Like";
-          ///$ec .="<img src='". ."' class='img-circle' height='55' width='55'>";
+          // (A) READ IMAGE INFO
+          $file = $_FILES['file']['tmp_name'];
+          $fileData = exif_read_data($file);
+          $fileEncode = base64_encode(file_get_contents($file));
+
+          // (B) BASE 64 ENCODED IMAGE
+          echo"<img src=src=\"data:${fileData["MimeType"]};base64,${fileEncode}\" class='img-circle' height='55' width='55'>";
           echo"        </button>";     
           echo"      </div>";
           echo"    </div>";
